@@ -39,6 +39,22 @@
           document.documentElement.setAttribute("data-theme", theme);
         }
 
+        function getInitialTheme() {
+          // 1. Проверяем localStorage
+          const stored = localStorage.getItem('theme');
+          if (stored === 'dark' || stored === 'light') {
+            return stored;
+          }
+          
+          // 2. Проверяем системные настройки
+          if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return 'dark';
+          }
+          
+          // 3. По умолчанию светлая тема
+          return 'light';
+        }
+
         if (isInIframe) {
           // 监听父窗口主动推送的主题消息
           window.addEventListener("message", function (event) {
@@ -50,8 +66,8 @@
             }
           });
         } else {
-          // 非 iframe 环境，使用默认 light 主题
-          applyThemeToDOM("light");
+          // 非 iframe 环境， используем предпочтения пользователя
+          applyThemeToDOM(getInitialTheme());
         }
       })();
     </script>
