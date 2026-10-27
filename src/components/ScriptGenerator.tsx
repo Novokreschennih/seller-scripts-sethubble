@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Methodology, pricingPlans, commissionDistribution, tariffFAQ, businessCategories, businessCharacteristics, businessGoals, businessPains, CompanyData } from '../data/methodologies';
+import { generateWithPolza, buildPrompt } from '../utils/polza';
 
 interface Props {
   methodology: Methodology;
   companyData: CompanyData;
+  apiKey?: string;
 }
 
 function personalize(phrase: string, d: CompanyData): string {
@@ -42,12 +44,15 @@ function personalize(phrase: string, d: CompanyData): string {
     .replace(/\{additional\}/g, d.additionalNotes || '');
 }
 
-export default function ScriptGenerator({ methodology, companyData }: Props) {
+export default function ScriptGenerator({ methodology, companyData, apiKey }: Props) {
   const [expandedSections, setExpandedSections] = useState<number[]>(
     methodology.sections.map((_, i) => i)
   );
   const [showPricing, setShowPricing] = useState(false);
   const [showCommission, setShowCommission] = useState(false);
+  const [aiPhrases, setAiPhrases] = useState<Record<number, string[]>>({});
+  const [loadingSections, setLoadingSections] = useState<Set<number>>(new Set());
+  const [useAI, setUseAI] = useState(!!apiKey);
   const [showFAQ, setShowFAQ] = useState(false);
   const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null);
 
@@ -93,6 +98,44 @@ export default function ScriptGenerator({ methodology, companyData }: Props) {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+  };
+
+  const generateAISection = async (sectionIndex: number) => {
+    if (!apiKey) return;
+    
+    const section = methodology.sections[sectionIndex];
+    setLoadingSections(prev => new Set(prev).add(sectionIndex));
+    
+    try {
+      const messages = buildPrompt(
+        methodology.name,
+        companyData,
+        section.title,
+        section.description
+      );
+      
+      const response = await generateWithPolza(apiKey, messages);
+      
+      // Парсим ответ - извлекаем фразы из формата "1. "фраза""
+      const phrases = response
+        .split('\n')
+        .filter(line => line.match(/^\d+\.\s*["«]/))
+        .map(line => line.replace(/^\d+\.\s*["«]?(.*?)["»]?\s*$/, '$1').trim())
+        .filter(Boolean);
+      
+      if (phrases.length > 0) {
+        setAiPhrases(prev => ({ ...prev, [sectionIndex]: phrases }));
+      }
+    } catch (error) {
+      console.error('AI generation error:', error);
+      alert(`Ошибка генерации: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
+    } finally {
+      setLoadingSections(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(sectionIndex);
+        return newSet;
+      });
+    }
   };
 
   const category = businessCategories.find(c => c.id === companyData.businessCategory);
@@ -331,28 +374,64 @@ export default function ScriptGenerator({ methodology, companyData }: Props) {
               <div className="px-4 pb-4 border-t border-gray-100">
                 <div className="mt-4 space-y-3">
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-700 mb-2">📝 Шаблоны фраз:</h4>
-                    <div className="space-y-2">
-                      {section.templatePhrases.map((phrase, pi) => {
-                        const personalized = personalize(phrase, companyData);
-                        return (
-                          <div key={pi} className="flex items-start gap-2 group">
-                            <div className="flex-1 bg-gray-50 rounded-lg p-3 text-sm text-gray-700 border border-gray-100">
-                              "{personalized}"
-                            </div>
-                            <button
-                              onClick={() => copyToClipboard(personalized)}
-                              className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-gray-200 rounded shrink-0"
-                              title="Копировать"
-                            >
-                              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-sm font-semibold text-gray-700">
+                        {aiPhrases[index] ? '✨ ИИ-фразы:' : '📝 Шаблоны фраз:'}
+                      </h4>
+                      {apiKey && !aiPhrases[index] && (
+                        <button
+                          onClick={() => generateAISection(index)}
+                          disabled={loadingSections.has(index)}
+                          className="flex items-center gap-1 px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-xs font-medium"
+                        >
+                          {loadingSections.has(index) ? (
+                            <>
+                              <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                               </svg>
-                            </button>
-                          </div>
-                        );
-                      })}
+                              Генерация...
+                            </>
+                          ) : (
+                            <>✨ Сгенерировать с ИИ</>
+                          )}
+                        </button>
+                      )}
                     </div>
+                    <div className="space-y-2">
+                      {(aiPhrases[index] || section.templatePhrases.map(p => personalize(p, companyData))).map((phrase, pi) => (
+                        <div key={pi} className="flex items-start gap-2 group">
+                          <div className={`flex-1 rounded-lg p-3 text-sm border ${
+                            aiPhrases[index] 
+                              ? 'bg-purple-50 text-purple-900 border-purple-200' 
+                              : 'bg-gray-50 text-gray-700 border-gray-100'
+                          }`}>
+                            "{phrase}"
+                          </div>
+                          <button
+                            onClick={() => copyToClipboard(phrase)}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-gray-200 rounded shrink-0"
+                            title="Копировать"
+                          >
+                            <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    {aiPhrases[index] && (
+                      <button
+                        onClick={() => setAiPhrases(prev => {
+                          const newPhrases = { ...prev };
+                          delete newPhrases[index];
+                          return newPhrases;
+                        })}
+                        className="mt-2 text-xs text-gray-500 hover:text-gray-700 underline"
+                      >
+                        Вернуться к шаблонам
+                      </button>
+                    )}
                   </div>
 
                   <div>

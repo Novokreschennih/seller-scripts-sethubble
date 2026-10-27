@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { methodologies, CompanyData } from './data/methodologies';
 import MethodologySelector from './components/MethodologySelector';
 import CompanyProfile from './components/CompanyProfile';
 import ScriptGenerator from './components/ScriptGenerator';
 import ObjectionHandler from './components/ObjectionHandler';
+import ApiKeyManager from './components/ApiKeyManager';
 
 type Tab = 'methodology' | 'profile' | 'script' | 'objections';
 
@@ -22,6 +23,17 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('methodology');
   const [selectedMethodologyId, setSelectedMethodologyId] = useState<string | null>(null);
   const [companyData, setCompanyData] = useState<CompanyData>(initialCompanyData);
+  const [apiKey, setApiKey] = useState<string>(() => {
+    return localStorage.getItem('polza_api_key') || '';
+  });
+
+  useEffect(() => {
+    if (apiKey) {
+      localStorage.setItem('polza_api_key', apiKey);
+    } else {
+      localStorage.removeItem('polza_api_key');
+    }
+  }, [apiKey]);
 
   const selectedMethodology = methodologies.find(m => m.id === selectedMethodologyId) || null;
 
@@ -112,6 +124,11 @@ export default function App() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* API Key Manager - показываем всегда вверху */}
+        <div className="mb-6">
+          <ApiKeyManager apiKey={apiKey} onChange={setApiKey} />
+        </div>
+
         {activeTab === 'methodology' && (
           <div>
             <MethodologySelector
@@ -168,6 +185,7 @@ export default function App() {
             <ScriptGenerator
               methodology={selectedMethodology}
               companyData={companyData}
+              apiKey={apiKey}
             />
             <div className="mt-6 flex justify-between">
               <button
