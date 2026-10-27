@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Methodology, pricingPlans } from '../data/methodologies';
+import { Methodology, pricingPlans, commissionDistribution, tariffFAQ } from '../data/methodologies';
 import { CompanyData } from './CompanyProfile';
 
 interface Props {
@@ -53,6 +53,9 @@ export default function ScriptGenerator({ methodology, companyData }: Props) {
     methodology.sections.map((_, i) => i)
   );
   const [showPricing, setShowPricing] = useState(false);
+  const [showCommission, setShowCommission] = useState(false);
+  const [showFAQ, setShowFAQ] = useState(false);
+  const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null);
 
   const toggleSection = (index: number) => {
     setExpandedSections(prev =>
@@ -114,12 +117,24 @@ export default function ScriptGenerator({ methodology, companyData }: Props) {
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => setShowPricing(!showPricing)}
-            className="flex items-center gap-2 px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+            className={`flex items-center gap-2 px-3 py-2 border rounded-lg transition-colors text-sm font-medium ${showPricing ? 'bg-indigo-50 border-indigo-300 text-indigo-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
           >
             💰 Тарифы
+          </button>
+          <button
+            onClick={() => setShowCommission(!showCommission)}
+            className={`flex items-center gap-2 px-3 py-2 border rounded-lg transition-colors text-sm font-medium ${showCommission ? 'bg-emerald-50 border-emerald-300 text-emerald-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+          >
+            📊 Комиссия
+          </button>
+          <button
+            onClick={() => setShowFAQ(!showFAQ)}
+            className={`flex items-center gap-2 px-3 py-2 border rounded-lg transition-colors text-sm font-medium ${showFAQ ? 'bg-amber-50 border-amber-300 text-amber-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+          >
+            ❓ FAQ
           </button>
           <button
             onClick={() => copyToClipboard(generateFullScript())}
@@ -128,7 +143,7 @@ export default function ScriptGenerator({ methodology, companyData }: Props) {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
             </svg>
-            Копировать всё
+            Копировать
           </button>
         </div>
       </div>
@@ -137,23 +152,100 @@ export default function ScriptGenerator({ methodology, companyData }: Props) {
       {showPricing && (
         <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-5 border border-indigo-200 mb-4">
           <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <span>💰</span> Тарифы SetHubble — для презентации клиенту
+            <span>💰</span> Тарифы SetHubble — из личного кабинета
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {pricingPlans.map((plan, i) => (
-              <div key={i} className="bg-white rounded-lg p-4 border border-gray-200">
-                <h4 className="font-bold text-gray-900">{plan.name}</h4>
-                <p className="text-indigo-600 font-semibold text-lg">{plan.price}</p>
-                <p className="text-sm text-gray-500 mb-3">Комиссия: {plan.commission}</p>
-                <ul className="space-y-1">
+              <div key={i} className={`bg-white rounded-lg p-4 border-2 ${i === 2 ? 'border-indigo-400 shadow-lg' : 'border-gray-200'}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-bold text-gray-900">{plan.name}</h4>
+                  {i === 2 && <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-medium">Рекомендуем</span>}
+                </div>
+                <p className="text-indigo-600 font-semibold text-xl">{plan.price}</p>
+                <p className="text-xs text-gray-500 mb-3">{plan.priceNote}</p>
+                <div className="bg-gray-50 rounded p-2 mb-3">
+                  <p className="text-xs text-gray-600"><strong>Комиссия при выводе:</strong> {plan.commission}</p>
+                  <p className="text-xs text-gray-500 italic mt-1">{plan.example}</p>
+                </div>
+                <ul className="space-y-1.5">
                   {plan.features.map((f, fi) => (
                     <li key={fi} className="text-xs text-gray-600 flex items-start gap-1">
-                      <span className="text-green-500 mt-0.5">✓</span>
-                      {f}
+                      <span className="text-green-500 mt-0.5 shrink-0">✓</span>
+                      <span>{f}</span>
                     </li>
                   ))}
                 </ul>
-                <p className="text-xs text-gray-400 mt-3 italic">{plan.bestFor}</p>
+                <p className="text-xs text-gray-400 mt-3 italic border-t border-gray-100 pt-2">{plan.bestFor}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+            <p className="text-xs text-gray-700">
+              <strong>⚠️ Важно:</strong> Тариф открывает функции и лимиты кабинета. Он НЕ является вкладом, инвестицией или гарантией дохода. Начисление возможно только при наличии соответствующей операции.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Commission distribution */}
+      {showCommission && (
+        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-5 border border-emerald-200 mb-4">
+          <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <span>📊</span> Как платформа делит комиссию
+          </h3>
+          <p className="text-sm text-gray-700 mb-3">{commissionDistribution.description}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            {commissionDistribution.breakdown.map((item, i) => (
+              <div key={i} className="bg-white rounded-lg p-3 border border-gray-200">
+                <p className="text-xs text-gray-500">{item.role}</p>
+                <p className="text-lg font-bold text-emerald-600">{item.share}</p>
+              </div>
+            ))}
+          </div>
+          <div className="bg-white rounded-lg p-4 border border-gray-200">
+            <h4 className="font-semibold text-gray-900 mb-2">{commissionDistribution.example.title}:</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+              <p className="text-gray-600">Вывод: <strong>{commissionDistribution.example.withdrawal}</strong></p>
+              <p className="text-gray-600">Тариф: <strong>{commissionDistribution.example.tariff}</strong></p>
+              <p className="text-gray-600">Общая комиссия: <strong>{commissionDistribution.example.totalCommission}</strong></p>
+              <p className="text-gray-600">Прямому пригласившему: <strong>{commissionDistribution.example.directInviter}</strong></p>
+              <p className="text-gray-600">Уровни 2-10: <strong>{commissionDistribution.example.levels2to10}</strong></p>
+              <p className="text-gray-600">Всего пригласившим: <strong className="text-emerald-600">{commissionDistribution.example.totalToInviters}</strong></p>
+              <p className="text-gray-600">Платформе: <strong>{commissionDistribution.example.toPlatform}</strong></p>
+              <p className="text-gray-600">Продавец получает: <strong className="text-indigo-600">{commissionDistribution.example.sellerReceives}</strong></p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* FAQ */}
+      {showFAQ && (
+        <div className="bg-white rounded-xl border border-gray-200 p-5 mb-4">
+          <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <span>❓</span> FAQ по тарифам — ответы на вопросы клиента
+          </h3>
+          <div className="space-y-2">
+            {tariffFAQ.map((item, i) => (
+              <div key={i} className="border border-gray-200 rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setExpandedFAQ(expandedFAQ === i ? null : i)}
+                  className="w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors text-left"
+                >
+                  <span className="text-sm font-medium text-gray-900">{item.question}</span>
+                  <svg
+                    className={`w-4 h-4 text-gray-400 transition-transform shrink-0 ml-2 ${expandedFAQ === i ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {expandedFAQ === i && (
+                  <div className="px-3 pb-3 border-t border-gray-100">
+                    <p className="text-sm text-gray-600 mt-2">{item.answer}</p>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -240,20 +332,51 @@ export default function ScriptGenerator({ methodology, companyData }: Props) {
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {[
-            'Бесплатное подключение — нулевой риск для клиента',
-            'Оплата только за результат (от 1% с продаж)',
-            'Готовые инструменты: сайты-визитки, QR-коды, флайеры',
-            'Автоматический учёт рекомендаций и расчёт вознаграждений',
-            'Клиенты остаются вашими (не уходят к конкурентам)',
+            'Старт бесплатно (план Самолёт) — нулевой риск',
+            'Комиссия только при выводе: 5% / 3% / 1%',
+            'Партнёрские программы до 10 уровней на ВСЕХ тарифах',
+            'Две ссылки: на оплату (прямые продажи) и для партнёров',
+            'Автоматический вывод на Ракете и Шаттле',
+            'Webhook для интеграции с вашими системами',
             'Работает для онлайн и офлайн бизнеса',
-            'Масштабирование через сеть партнёров',
-            'Принимает криптоплатежи — обход ограничений'
+            'Криптоплатежи — обход ограничений в вашей стране',
+            'Клиенты остаются вашими (не уходят к конкурентам)',
+            '57% комиссии платформы идёт пригласившим'
           ].map((item, i) => (
             <div key={i} className="flex items-start gap-2 text-sm text-gray-700">
               <span className="text-emerald-500 font-bold">✓</span>
               {item}
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* How it works */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-200 mt-4">
+        <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+          <span>⚙️</span> Как это работает (для объяснения клиенту)
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <h4 className="font-semibold text-gray-800 mb-2">Для продавца:</h4>
+            <ol className="space-y-1 text-sm text-gray-700 list-decimal list-inside">
+              <li>Регистрация и добавление товара/услуги/компании</li>
+              <li>Настройка партнёрской программы (опционально)</li>
+              <li>Получение двух ссылок: на оплату и для партнёров</li>
+              <li>Размещение ссылок на своих ресурсах</li>
+              <li>Вывод средств (комиссия только при выводе)</li>
+            </ol>
+          </div>
+          <div>
+            <h4 className="font-semibold text-gray-800 mb-2">Для партнёра:</h4>
+            <ol className="space-y-1 text-sm text-gray-700 list-decimal list-inside">
+              <li>Получает ссылку от продавца</li>
+              <li>Приводит покупателей по своей ссылке</li>
+              <li>Покупатель оплачивает через SetHubble</li>
+              <li>Партнёр получает вознаграждение автоматически</li>
+              <li>Может привлекать других партнёров (до 10 уровней)</li>
+            </ol>
+          </div>
         </div>
       </div>
 
