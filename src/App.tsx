@@ -8,15 +8,21 @@ import ObjectionHandler from './components/ObjectionHandler';
 type Tab = 'methodology' | 'profile' | 'script' | 'objections';
 
 const initialCompanyData: CompanyData = {
-  companyName: '',
+  clientName: '',
+  businessName: '',
   industry: '',
+  businessType: '',
   companySize: '',
-  product: '',
-  targetAudience: '',
+  avgCheck: '',
+  clientsPerMonth: '',
+  currentMarketing: '',
+  marketingBudget: '',
+  clientAcquisitionCost: '',
   painPoints: '',
-  uniqueValue: '',
+  referralSystem: '',
   meetingGoal: '',
-  competitorMention: '',
+  decisionMaker: '',
+  competitorsUsingReferral: '',
   additionalInfo: '',
 };
 
@@ -29,7 +35,7 @@ export default function App() {
 
   const tabs: { id: Tab; label: string; icon: string; disabled?: boolean }[] = [
     { id: 'methodology', label: 'Методика', icon: '📋' },
-    { id: 'profile', label: 'Профиль', icon: '🏢' },
+    { id: 'profile', label: 'Профиль клиента', icon: '🏢' },
     { id: 'script', label: 'Скрипт', icon: '📝', disabled: !selectedMethodology },
     { id: 'objections', label: 'Возражения', icon: '🛡️' },
   ];
@@ -42,7 +48,7 @@ export default function App() {
     if (selectedMethodologyId) completed++;
     
     steps++;
-    if (companyData.companyName && companyData.product && companyData.painPoints) completed++;
+    if (companyData.businessName && companyData.industry && companyData.avgCheck) completed++;
     
     return { steps, completed, percentage: Math.round((completed / steps) * 100) };
   };
@@ -57,11 +63,11 @@ export default function App() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-200">
-                <span className="text-white text-lg">⚡</span>
+                <span className="text-white text-lg font-bold">S</span>
               </div>
               <div>
                 <h1 className="text-lg font-bold text-gray-900">ScriptForge</h1>
-                <p className="text-xs text-gray-500 hidden sm:block">Генератор продающих скриптов</p>
+                <p className="text-xs text-gray-500 hidden sm:block">Скрипты для продажи SetHubble</p>
               </div>
             </div>
             
@@ -103,7 +109,7 @@ export default function App() {
                 {tab.id === 'methodology' && selectedMethodologyId && (
                   <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                 )}
-                {tab.id === 'profile' && companyData.companyName && (
+                {tab.id === 'profile' && companyData.businessName && (
                   <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                 )}
               </button>
@@ -129,7 +135,7 @@ export default function App() {
                   onClick={() => setActiveTab('profile')}
                   className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-medium shadow-lg shadow-indigo-200"
                 >
-                  Далее: Профиль компании
+                  Далее: Профиль клиента
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
@@ -196,10 +202,7 @@ export default function App() {
 
         {activeTab === 'objections' && (
           <div>
-            <ObjectionHandler
-              companyName={companyData.companyName}
-              product={companyData.product}
-            />
+            <ObjectionHandler companyData={companyData} />
             <div className="mt-6 flex justify-start">
               <button
                 onClick={() => setActiveTab('script')}
@@ -220,14 +223,16 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-gray-500">
-              ScriptForge — создавайте эффективные скрипты для встреч с предпринимателями
+              ScriptForge — генератор скриптов для продажи платформы SetHubble
             </p>
             <div className="flex items-center gap-4 text-sm text-gray-400">
               <span>6 методик</span>
               <span>•</span>
-              <span>5 типов возражений</span>
+              <span>6 типов возражений</span>
               <span>•</span>
-              <span>Персонализация</span>
+              <a href="https://sethubble.com/ru/main" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:text-indigo-700">
+                sethubble.com
+              </a>
             </div>
           </div>
         </div>

@@ -1,24 +1,27 @@
 import { useState } from 'react';
 import { objectionTemplates } from '../data/methodologies';
+import { CompanyData } from './CompanyProfile';
 
 interface Props {
-  companyName?: string;
-  product?: string;
+  companyData: CompanyData;
 }
 
-export default function ObjectionHandler({ companyName, product }: Props) {
+export default function ObjectionHandler({ companyData }: Props) {
   const [expandedObjection, setExpandedObjection] = useState<number | null>(null);
   const [customObjection, setCustomObjection] = useState('');
   const [customResponses, setCustomResponses] = useState<string[]>([]);
+
+  const businessContext = companyData.businessName || 'ваш бизнес';
+  const industry = companyData.industry || 'ваша сфера';
 
   const generateCustomResponses = () => {
     if (!customObjection.trim()) return;
     
     const responses = [
-      `Понимаю вашу точку зрения. ${companyName || 'Наша компания'} решает именно эту задачу через ${product || 'наше решение'}. Позвольте показать, как это работает...`,
-      `Интересное замечание. Многие наши клиенты изначально думали так же. Что их убедило — это конкретные результаты: давайте я покажу примеры...`,
-      `Согласен, это важный вопрос. Давайте разберём его детально: какие конкретно аспекты вас беспокоят?`,
-      `Спасибо за честность. Это как раз тот вопрос, который мы детально проработали. Могу показать, как это работает на примере похожей компании...`
+      `Понимаю вашу точку зрения. ${businessContext} в сфере ${industry} — как раз тот случай, где SetHubble показывает максимальный результат. Позвольте показать на вашем примере...`,
+      `Интересное замечание. Многие предприниматели в ${industry} изначально думали так же. Что их убедило — конкретные результаты: система оцифровки сарафанного радио без рисков и абонентских плат.`,
+      `Согласен, это важный вопрос. Давайте разберём детально: SetHubble не требует от вас менять бизнес-процессы. Вы продолжаете работать как обычно — просто добавляете систему рекомендаций, которая работает автоматически.`,
+      `Спасибо за честность. Вот что важно: подключение бесплатное, комиссия только с реальных продаж. Нет клиента — нет оплаты. Какие конкретно аспекты вас беспокоят? Давайте разберём каждый.`
     ];
     setCustomResponses(responses);
   };
@@ -31,20 +34,20 @@ export default function ObjectionHandler({ companyName, product }: Props) {
         </div>
         <div>
           <h2 className="text-xl font-bold text-gray-900">Работа с возражениями</h2>
-          <p className="text-sm text-gray-500">Шаблоны ответов на типичные возражения</p>
+          <p className="text-sm text-gray-500">Типичные возражения при продаже SetHubble и ответы на них</p>
         </div>
       </div>
 
       {/* Custom objection */}
       <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-5 border border-amber-200">
         <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-          <span>✍️</span> Своё возражение
+          <span>✍️</span> Своё возражение клиента
         </h3>
         <div className="flex gap-2">
           <input
             type="text"
             className="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all text-sm"
-            placeholder="Введите возражение клиента..."
+            placeholder="Что сказал клиент? Например: «А если мне не понравится?»"
             value={customObjection}
             onChange={(e) => setCustomObjection(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && generateCustomResponses()}
@@ -53,7 +56,7 @@ export default function ObjectionHandler({ companyName, product }: Props) {
             onClick={generateCustomResponses}
             className="px-4 py-2.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm font-medium whitespace-nowrap"
           >
-            Генерировать
+            Ответы
           </button>
         </div>
         {customResponses.length > 0 && (
@@ -65,7 +68,7 @@ export default function ObjectionHandler({ companyName, product }: Props) {
                 </div>
                 <button
                   onClick={() => navigator.clipboard.writeText(response)}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-amber-100 rounded"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-amber-100 rounded shrink-0"
                   title="Копировать"
                 >
                   <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,7 +91,7 @@ export default function ObjectionHandler({ companyName, product }: Props) {
             >
               <div className="flex items-center gap-3">
                 <span className="text-2xl">
-                  {index === 0 ? '💰' : index === 1 ? '🤔' : index === 2 ? '🔄' : index === 3 ? '⏰' : '👥'}
+                  {['🔄', '₿', '🤷', '😰', '🤔', '🛡️'][index] || '💬'}
                 </span>
                 <div className="text-left">
                   <h3 className="font-semibold text-gray-900">"{objection.objection}"</h3>
@@ -116,7 +119,7 @@ export default function ObjectionHandler({ companyName, product }: Props) {
                       </div>
                       <button
                         onClick={() => navigator.clipboard.writeText(response)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-green-100 rounded"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-green-100 rounded shrink-0"
                         title="Копировать"
                       >
                         <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,6 +133,21 @@ export default function ObjectionHandler({ companyName, product }: Props) {
             )}
           </div>
         ))}
+      </div>
+
+      {/* Quick reference */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-200 mt-4">
+        <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+          <span>📌</span> Золотые правила работы с возражениями
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-700">
+          <p>• <strong>Присоединяйтесь:</strong> "Понимаю", "Согласен", "Это важный вопрос"</p>
+          <p>• <strong>Уточняйте:</strong> "Что именно вас беспокоит?"</p>
+          <p>• <strong>Не спорьте:</strong> ведите диалог, а не дискуссию</p>
+          <p>• <strong>Возвращайте к выгодам:</strong> "Давайте посмотрим, что вы получаете..."</p>
+          <p>• <strong>Используйте цифры:</strong> считайте вместе с клиентом</p>
+          <p>• <strong>Закрывайте:</strong> "Что ещё мешает принять решение?"</p>
+        </div>
       </div>
     </div>
   );
