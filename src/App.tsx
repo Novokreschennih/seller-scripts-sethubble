@@ -13,9 +13,6 @@ const initialCompanyData: CompanyData = {
   mapLink: '',
   businessCategory: '',
   businessSubcategory: '',
-  characteristics: [],
-  mainGoals: [],
-  mainPains: [],
   additionalNotes: '',
 };
 
@@ -68,7 +65,7 @@ export default function App() {
     if (selectedMethodologyId) completed++;
     
     steps++;
-    if (companyData.businessName && companyData.businessCategory && companyData.mainGoals?.length > 0) completed++;
+    if (companyData.businessName && companyData.businessCategory) completed++;
     
     return { steps, completed, percentage: Math.round((completed / steps) * 100) };
   };

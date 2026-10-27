@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Methodology, pricingPlans, commissionDistribution, tariffFAQ, businessCategories, businessCharacteristics, businessGoals, businessPains, CompanyData } from '../data/methodologies';
+import { Methodology, pricingPlans, commissionDistribution, tariffFAQ, businessCategories, CompanyData } from '../data/methodologies';
 import { generateWithPolza, buildPrompt } from '../utils/polza';
 
 interface Props {
@@ -12,35 +12,11 @@ function personalize(phrase: string, d: CompanyData): string {
   const category = businessCategories.find(c => c.id === d.businessCategory);
   const categoryName = category?.name || 'ваш бизнес';
   const subcategory = d.businessSubcategory || categoryName;
-  
-  // Получить выбранные характеристики
-  const selectedChars = (d.characteristics || [])
-    .map((id: string) => businessCharacteristics.find((c: any) => c.id === id)?.label || '')
-    .filter(Boolean)
-    .slice(0, 3)
-    .join(', ');
-  
-  // Получить выбранные цели
-  const selectedGoals = (d.mainGoals || [])
-    .map((id: string) => businessGoals.find((g: any) => g.id === id)?.label || '')
-    .filter(Boolean)
-    .slice(0, 2)
-    .join(' и ');
-  
-  // Получить выбранные боли
-  const selectedPains = (d.mainPains || [])
-    .map((id: string) => businessPains.find((p: any) => p.id === id)?.label || '')
-    .filter(Boolean)
-    .slice(0, 2)
-    .join(' и ');
 
   return phrase
     .replace(/\{business_name\}/g, d.businessName || 'ваш бизнес')
     .replace(/\{category\}/g, categoryName)
     .replace(/\{subcategory\}/g, subcategory)
-    .replace(/\{characteristics\}/g, selectedChars || 'ваши особенности')
-    .replace(/\{goals\}/g, selectedGoals || 'развитие бизнеса')
-    .replace(/\{pains\}/g, selectedPains || 'текущие сложности')
     .replace(/\{additional\}/g, d.additionalNotes || '');
 }
 
@@ -198,34 +174,6 @@ export default function ScriptGenerator({ methodology, companyData, apiKey }: Pr
             )}
             {companyData.businessSubcategory && (
               <p><strong>Тип:</strong> {companyData.businessSubcategory}</p>
-            )}
-            {companyData.characteristics?.length > 0 && (
-              <p>
-                <strong>Особенности:</strong>{' '}
-                {companyData.characteristics
-                  .map((id: string) => businessCharacteristics.find((c: any) => c.id === id)?.label)
-                  .filter(Boolean)
-                  .slice(0, 4)
-                  .join(', ')}
-              </p>
-            )}
-            {companyData.mainGoals?.length > 0 && (
-              <p>
-                <strong>Цели:</strong>{' '}
-                {companyData.mainGoals
-                  .map((id: string) => businessGoals.find((g: any) => g.id === id)?.label)
-                  .filter(Boolean)
-                  .join(', ')}
-              </p>
-            )}
-            {companyData.mainPains?.length > 0 && (
-              <p>
-                <strong>Боли:</strong>{' '}
-                {companyData.mainPains
-                  .map((id: string) => businessPains.find((p: any) => p.id === id)?.label)
-                  .filter(Boolean)
-                  .join(', ')}
-              </p>
             )}
             {companyData.mapLink && (
               <p>
