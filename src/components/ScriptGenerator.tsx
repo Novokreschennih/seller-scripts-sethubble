@@ -164,11 +164,11 @@ export default function ScriptGenerator({ methodology, companyData, apiKey }: Pr
 
       {/* Business summary */}
       {(companyData.businessName || companyData.businessSubcategory) && (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-200">
-          <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-50 dark:to-indigo-50 rounded-xl p-5 border border-blue-200 dark:border-blue-200">
+          <h3 className="font-bold text-gray-900 dark:text-gray-900 mb-3 flex items-center gap-2">
             <span>🎯</span> Контекст для скрипта
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700 dark:text-gray-700">
             {companyData.businessName && (
               <p><strong>Бизнес:</strong> {companyData.businessName}</p>
             )}
@@ -178,7 +178,7 @@ export default function ScriptGenerator({ methodology, companyData, apiKey }: Pr
             {companyData.mapLink && (
               <p>
                 <strong>Карта:</strong>{' '}
-                <a href={companyData.mapLink} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
+                <a href={companyData.mapLink} target="_blank" rel="noopener noreferrer" className="text-indigo-600 dark:text-indigo-600 hover:underline">
                   Открыть
                 </a>
               </p>
