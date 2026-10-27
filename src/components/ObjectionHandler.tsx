@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { objectionTemplates } from '../data/methodologies';
-import { CompanyData } from './CompanyProfile';
+import { objectionTemplates, CompanyData } from '../data/methodologies';
 
 interface Props {
   companyData: CompanyData;
@@ -12,7 +11,7 @@ export default function ObjectionHandler({ companyData }: Props) {
   const [customResponses, setCustomResponses] = useState<string[]>([]);
 
   const businessContext = companyData.businessName || 'ваш бизнес';
-  const industry = companyData.industry || 'ваша сфера';
+  const industry = companyData.businessSubcategory || 'ваша сфера';
 
   const generateCustomResponses = () => {
     if (!customObjection.trim()) return;

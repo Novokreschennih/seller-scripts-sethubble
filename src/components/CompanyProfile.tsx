@@ -1,79 +1,73 @@
-export interface CompanyData {
-  // О бизнесе клиента
-  clientName: string;
-  businessName: string;
-  industry: string;
-  businessType: string; // online, offline, both
-  companySize: string;
-  avgCheck: string;
-  clientsPerMonth: string;
-  
-  // Текущий маркетинг
-  currentMarketing: string;
-  marketingBudget: string;
-  clientAcquisitionCost: string;
-  
-  // Боли
-  painPoints: string;
-  referralSystem: string; // есть/нет/частично
-  
-  // Цели
-  meetingGoal: string;
-  decisionMaker: string;
-  
-  // Дополнительно
-  competitorsUsingReferral: string;
-  additionalInfo: string;
-}
+import {
+  CompanyData,
+  businessCategories,
+  businessCharacteristics,
+  businessGoals,
+  businessPains
+} from '../data/methodologies';
 
 interface Props {
   data: CompanyData;
   onChange: (data: CompanyData) => void;
 }
 
-const inputClass = "w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all text-sm bg-white placeholder-gray-400";
-const labelClass = "block text-sm font-semibold text-gray-700 mb-1.5";
-const sectionTitleClass = "text-lg font-bold text-gray-900 flex items-center gap-2 mb-4";
-
 export default function CompanyProfile({ data, onChange }: Props) {
-  const update = (field: keyof CompanyData, value: string) => {
+  const update = (field: keyof CompanyData, value: any) => {
     onChange({ ...data, [field]: value });
   };
 
+  const toggleCharacteristic = (id: string) => {
+    const current = data.characteristics || [];
+    if (current.includes(id)) {
+      update('characteristics', current.filter((c: string) => c !== id));
+    } else {
+      update('characteristics', [...current, id]);
+    }
+  };
+
+  const toggleGoal = (id: string) => {
+    const current = data.mainGoals || [];
+    if (current.includes(id)) {
+      update('mainGoals', current.filter((g: string) => g !== id));
+    } else {
+      update('mainGoals', [...current, id]);
+    }
+  };
+
+  const togglePain = (id: string) => {
+    const current = data.mainPains || [];
+    if (current.includes(id)) {
+      update('mainPains', current.filter((p: string) => p !== id));
+    } else {
+      update('mainPains', [...current, id]);
+    }
+  };
+
+  const selectedCategory = businessCategories.find(c => c.id === data.businessCategory);
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
-          <span className="text-xl">🏢</span>
+          <span className="text-xl">🎯</span>
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Профиль бизнеса клиента</h2>
-          <p className="text-sm text-gray-500">Заполните данные для персонализации скрипта продажи SetHubble</p>
+          <h2 className="text-xl font-bold text-gray-900">Профиль компании клиента</h2>
+          <p className="text-sm text-gray-500">Выберите характеристики для генерации персонализированного скрипта</p>
         </div>
       </div>
 
-      {/* О бизнесе */}
+      {/* Основная информация */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h3 className={sectionTitleClass}>
-          <span>👤</span> О бизнесе клиента
+        <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-4">
+          <span>📋</span> Основная информация
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="space-y-4">
           <div>
-            <label className={labelClass}>Имя клиента / ЛПР</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Название бизнеса</label>
             <input
               type="text"
-              className={inputClass}
-              placeholder="Имя Отчество"
-              value={data.clientName}
-              onChange={(e) => update('clientName', e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className={labelClass}>Название бизнеса</label>
-            <input
-              type="text"
-              className={inputClass}
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all text-sm"
               placeholder="Например: Салон красоты «Аврора»"
               value={data.businessName}
               onChange={(e) => update('businessName', e.target.value)}
@@ -81,224 +75,209 @@ export default function CompanyProfile({ data, onChange }: Props) {
           </div>
 
           <div>
-            <label className={labelClass}>Сфера деятельности</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+              Ссылка на компанию (2ГИС, Яндекс Карты, Google Maps)
+            </label>
             <input
-              type="text"
-              className={inputClass}
-              placeholder="Например: Стоматология, Фитнес, Ритейл"
-              value={data.industry}
-              onChange={(e) => update('industry', e.target.value)}
+              type="url"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all text-sm"
+              placeholder="https://2gis.ru/... или https://yandex.ru/maps/... или https://goo.gl/maps/..."
+              value={data.mapLink}
+              onChange={(e) => update('mapLink', e.target.value)}
             />
-          </div>
-
-          <div>
-            <label className={labelClass}>Тип бизнеса</label>
-            <select
-              className={inputClass}
-              value={data.businessType}
-              onChange={(e) => update('businessType', e.target.value)}
-            >
-              <option value="">Выберите...</option>
-              <option value="offline">Офлайн (магазин, салон, клиника)</option>
-              <option value="online">Онлайн (курс, SaaS, digital-услуги)</option>
-              <option value="both">Онлайн + Офлайн</option>
-            </select>
-          </div>
-
-          <div>
-            <label className={labelClass}>Размер бизнеса</label>
-            <select
-              className={inputClass}
-              value={data.companySize}
-              onChange={(e) => update('companySize', e.target.value)}
-            >
-              <option value="">Выберите...</option>
-              <option value="solo">Соло-предприниматель</option>
-              <option value="1-5">1-5 сотрудников</option>
-              <option value="6-20">6-20 сотрудников</option>
-              <option value="21-50">21-50 сотрудников</option>
-              <option value="50+">50+ сотрудников</option>
-            </select>
-          </div>
-
-          <div>
-            <label className={labelClass}>Средний чек</label>
-            <input
-              type="text"
-              className={inputClass}
-              placeholder="Например: 3000₽, $100"
-              value={data.avgCheck}
-              onChange={(e) => update('avgCheck', e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className={labelClass}>Клиентов в месяц</label>
-            <input
-              type="text"
-              className={inputClass}
-              placeholder="Примерное количество"
-              value={data.clientsPerMonth}
-              onChange={(e) => update('clientsPerMonth', e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className={labelClass}>ЛПР (принимающий решение)</label>
-            <input
-              type="text"
-              className={inputClass}
-              placeholder="Владелец, директор, маркетолог..."
-              value={data.decisionMaker}
-              onChange={(e) => update('decisionMaker', e.target.value)}
-            />
+            <p className="text-xs text-gray-500 mt-1">
+              💡 Вставьте ссылку — система проанализирует информацию о компании
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Текущий маркетинг */}
+      {/* Категория бизнеса */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h3 className={sectionTitleClass}>
-          <span>📢</span> Текущий маркетинг
+        <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-4">
+          <span>🏢</span> Категория бизнеса
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div>
-            <label className={labelClass}>Текущие каналы привлечения</label>
-            <textarea
-              className={inputClass + " h-20 resize-none"}
-              placeholder="Контекст, таргет, соцсети, сарафанное радио..."
-              value={data.currentMarketing}
-              onChange={(e) => update('currentMarketing', e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className={labelClass}>Бюджет на маркетинг / мес</label>
-            <input
-              type="text"
-              className={inputClass}
-              placeholder="Например: 100 000₽"
-              value={data.marketingBudget}
-              onChange={(e) => update('marketingBudget', e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className={labelClass}>Стоимость привлечения клиента (CAC)</label>
-            <input
-              type="text"
-              className={inputClass}
-              placeholder="Сколько стоит 1 новый клиент?"
-              value={data.clientAcquisitionCost}
-              onChange={(e) => update('clientAcquisitionCost', e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className={labelClass}>Система рекомендаций</label>
-            <select
-              className={inputClass}
-              value={data.referralSystem}
-              onChange={(e) => update('referralSystem', e.target.value)}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+          {businessCategories.map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => update('businessCategory', cat.id)}
+              className={`p-3 rounded-lg border-2 transition-all text-center ${
+                data.businessCategory === cat.id
+                  ? 'border-indigo-500 bg-indigo-50'
+                  : 'border-gray-200 hover:border-indigo-300'
+              }`}
             >
-              <option value="">Выберите...</option>
-              <option value="none">Нет системы</option>
-              <option value="partial">Частично (скидки постоянным)</option>
-              <option value="full">Есть программа лояльности</option>
-            </select>
-          </div>
+              <div className="text-2xl mb-1">{cat.icon}</div>
+              <div className="text-xs font-medium text-gray-700">{cat.name}</div>
+            </button>
+          ))}
         </div>
+
+        {selectedCategory && (
+          <div className="mt-4">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Уточните тип:</label>
+            <div className="flex flex-wrap gap-2">
+              {selectedCategory.subcategories.map(sub => (
+                <button
+                  key={sub}
+                  onClick={() => update('businessSubcategory', sub)}
+                  className={`px-3 py-1.5 rounded-full text-sm transition-all ${
+                    data.businessSubcategory === sub
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {sub}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Боли и цели */}
+      {/* Характеристики */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h3 className={sectionTitleClass}>
-          <span>🎯</span> Боли и цели
+        <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-4">
+          <span>✨</span> Ключевые характеристики
+          <span className="text-sm font-normal text-gray-500">(выберите все подходящие)</span>
         </h3>
-        <div className="space-y-5">
-          <div>
-            <label className={labelClass}>Основные боли / проблемы</label>
-            <textarea
-              className={inputClass + " h-20 resize-none"}
-              placeholder="Дорогая реклама, нестабильный поток клиентов, нет системы рекомендаций..."
-              value={data.painPoints}
-              onChange={(e) => update('painPoints', e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className={labelClass}>Цель встречи</label>
-            <select
-              className={inputClass}
-              value={data.meetingGoal}
-              onChange={(e) => update('meetingGoal', e.target.value)}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {businessCharacteristics.map(char => (
+            <label
+              key={char.id}
+              className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                data.characteristics?.includes(char.id)
+                  ? 'border-indigo-500 bg-indigo-50'
+                  : 'border-gray-200 hover:border-indigo-300'
+              }`}
             >
-              <option value="">Выберите...</option>
-              <option value="cold">Холодная встреча / знакомство</option>
-              <option value="presentation">Презентация SetHubble</option>
-              <option value="demo">Демо / показ платформы</option>
-              <option value="negotiation">Переговоры об условиях</option>
-              <option value="closing">Закрытие на подключение</option>
-              <option value="followup">Повторная встреча</option>
-            </select>
-          </div>
-
-          <div>
-            <label className={labelClass}>Конкуренты, использующие реферальные системы</label>
-            <input
-              type="text"
-              className={inputClass}
-              placeholder="Известно ли, что конкуренты используют рекомендации?"
-              value={data.competitorsUsingReferral}
-              onChange={(e) => update('competitorsUsingReferral', e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className={labelClass}>Дополнительная информация</label>
-            <textarea
-              className={inputClass + " h-20 resize-none"}
-              placeholder="Контекст встречи, особенности, предыдущий опыт..."
-              value={data.additionalInfo}
-              onChange={(e) => update('additionalInfo', e.target.value)}
-            />
-          </div>
+              <input
+                type="checkbox"
+                checked={data.characteristics?.includes(char.id) || false}
+                onChange={() => toggleCharacteristic(char.id)}
+                className="mt-0.5 w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+              />
+              <div className="flex-1">
+                <div className="text-sm font-medium text-gray-900">{char.label}</div>
+                <div className="text-xs text-gray-500">{char.description}</div>
+              </div>
+            </label>
+          ))}
         </div>
       </div>
 
-      {/* Быстрый расчёт */}
-      {data.avgCheck && data.clientsPerMonth && (
-        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-5 border border-indigo-200">
+      {/* Цели */}
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-4">
+          <span>🎯</span> Цели бизнеса
+          <span className="text-sm font-normal text-gray-500">(что хочет достичь клиент)</span>
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {businessGoals.map(goal => (
+            <label
+              key={goal.id}
+              className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                data.mainGoals?.includes(goal.id)
+                  ? 'border-green-500 bg-green-50'
+                  : 'border-gray-200 hover:border-green-300'
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={data.mainGoals?.includes(goal.id) || false}
+                onChange={() => toggleGoal(goal.id)}
+                className="mt-0.5 w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+              />
+              <div className="flex-1">
+                <div className="text-sm font-medium text-gray-900">{goal.label}</div>
+                <div className="text-xs text-gray-500">{goal.description}</div>
+              </div>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Боли */}
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-4">
+          <span>😣</span> Боли бизнеса
+          <span className="text-sm font-normal text-gray-500">(что мешает клиенту)</span>
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {businessPains.map(pain => (
+            <label
+              key={pain.id}
+              className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                data.mainPains?.includes(pain.id)
+                  ? 'border-red-500 bg-red-50'
+                  : 'border-gray-200 hover:border-red-300'
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={data.mainPains?.includes(pain.id) || false}
+                onChange={() => togglePain(pain.id)}
+                className="mt-0.5 w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
+              />
+              <div className="flex-1">
+                <div className="text-sm font-medium text-gray-900">{pain.label}</div>
+                <div className="text-xs text-gray-500">{pain.description}</div>
+              </div>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Дополнительные заметки */}
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-4">
+          <span>📝</span> Дополнительные заметки
+        </h3>
+        <textarea
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all text-sm h-24 resize-none"
+          placeholder="Любая дополнительная информация о встрече, контексте, особенностях..."
+          value={data.additionalNotes}
+          onChange={(e) => update('additionalNotes', e.target.value)}
+        />
+      </div>
+
+      {/* Анализ */}
+      {(data.businessName || data.mapLink) && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-200">
           <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-            <span>📊</span> Быстрый расчёт потенциала
+            <span>🔍</span> Анализ для скрипта
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-            <div className="bg-white rounded-lg p-3">
-              <p className="text-xs text-gray-500">Текущий оборот/мес</p>
-              <p className="text-lg font-bold text-gray-900">
-                {(() => {
-                  const check = parseFloat(data.avgCheck.replace(/[^\d.]/g, '')) || 0;
-                  const clients = parseInt(data.clientsPerMonth.replace(/[^\d]/g, '')) || 0;
-                  return `${(check * clients).toLocaleString()}${data.avgCheck.includes('$') ? '$' : '₽'}`;
-                })()}
+          <div className="space-y-2 text-sm text-gray-700">
+            {data.businessName && (
+              <p><strong>Бизнес:</strong> {data.businessName}</p>
+            )}
+            {data.businessSubcategory && (
+              <p><strong>Тип:</strong> {data.businessSubcategory}</p>
+            )}
+            {data.characteristics?.length > 0 && (
+              <p>
+                <strong>Особенности:</strong> {data.characteristics.length} характеристик выбрано
               </p>
-            </div>
-            <div className="bg-white rounded-lg p-3">
-              <p className="text-xs text-gray-500">+30% через рекомендации</p>
-              <p className="text-lg font-bold text-green-600">
-                {(() => {
-                  const check = parseFloat(data.avgCheck.replace(/[^\d.]/g, '')) || 0;
-                  const clients = parseInt(data.clientsPerMonth.replace(/[^\d]/g, '')) || 0;
-                  return `${Math.round(check * clients * 0.3).toLocaleString()}${data.avgCheck.includes('$') ? '$' : '₽'}`;
-                })()}
+            )}
+            {data.mainGoals?.length > 0 && (
+              <p>
+                <strong>Цели:</strong> {data.mainGoals.length} целей
               </p>
-            </div>
-            <div className="bg-white rounded-lg p-3">
-              <p className="text-xs text-gray-500">Экономия на маркетинге</p>
-              <p className="text-lg font-bold text-indigo-600">
-                {data.marketingBudget || '—'}
+            )}
+            {data.mainPains?.length > 0 && (
+              <p>
+                <strong>Боли:</strong> {data.mainPains.length} болей
               </p>
-            </div>
+            )}
+            {data.mapLink && (
+              <p>
+                <strong>Ссылка:</strong>{' '}
+                <a href={data.mapLink} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
+                  Открыть на карте
+                </a>
+              </p>
+            )}
           </div>
         </div>
       )}

@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { Methodology, pricingPlans, commissionDistribution, tariffFAQ } from '../data/methodologies';
-import { CompanyData } from './CompanyProfile';
+import { Methodology, pricingPlans, commissionDistribution, tariffFAQ, businessCategories, businessCharacteristics, businessGoals, businessPains, CompanyData } from '../data/methodologies';
 
 interface Props {
   methodology: Methodology;
@@ -8,44 +7,39 @@ interface Props {
 }
 
 function personalize(phrase: string, d: CompanyData): string {
+  const category = businessCategories.find(c => c.id === d.businessCategory);
+  const categoryName = category?.name || 'ваш бизнес';
+  const subcategory = d.businessSubcategory || categoryName;
+  
+  // Получить выбранные характеристики
+  const selectedChars = (d.characteristics || [])
+    .map((id: string) => businessCharacteristics.find((c: any) => c.id === id)?.label || '')
+    .filter(Boolean)
+    .slice(0, 3)
+    .join(', ');
+  
+  // Получить выбранные цели
+  const selectedGoals = (d.mainGoals || [])
+    .map((id: string) => businessGoals.find((g: any) => g.id === id)?.label || '')
+    .filter(Boolean)
+    .slice(0, 2)
+    .join(' и ');
+  
+  // Получить выбранные боли
+  const selectedPains = (d.mainPains || [])
+    .map((id: string) => businessPains.find((p: any) => p.id === id)?.label || '')
+    .filter(Boolean)
+    .slice(0, 2)
+    .join(' и ');
+
   return phrase
-    .replace(/\{industry\}/g, d.industry || 'ваша отрасль')
     .replace(/\{business_name\}/g, d.businessName || 'ваш бизнес')
-    .replace(/\{client_name\}/g, d.clientName || '')
-    .replace(/\{avg_check\}/g, d.avgCheck || 'ваш средний чек')
-    .replace(/\{clients_per_month\}/g, d.clientsPerMonth || 'N')
-    .replace(/\{marketing_budget\}/g, d.marketingBudget || 'ваш маркетинговый бюджет')
-    .replace(/\{cac\}/g, d.clientAcquisitionCost || 'стоимость привлечения')
-    .replace(/\{new_clients\}/g, (() => {
-      const clients = parseInt(d.clientsPerMonth?.replace(/[^\d]/g, '') || '0');
-      return clients ? String(Math.round(clients * 0.3)) : '30-50';
-    })())
-    .replace(/\{monthly_revenue\}/g, (() => {
-      const check = parseFloat(d.avgCheck?.replace(/[^\d.]/g, '') || '0');
-      const clients = parseInt(d.clientsPerMonth?.replace(/[^\d]/g, '') || '0');
-      const rev = check * clients * 0.3;
-      return rev ? `${Math.round(rev).toLocaleString()}${d.avgCheck?.includes('$') ? '$' : '₽'}` : '[рассчитать]';
-    })())
-    .replace(/\{potential_revenue\}/g, (() => {
-      const check = parseFloat(d.avgCheck?.replace(/[^\d.]/g, '') || '0');
-      const clients = parseInt(d.clientsPerMonth?.replace(/[^\d]/g, '') || '0');
-      const rev = check * clients * 0.4;
-      return rev ? `${Math.round(rev).toLocaleString()}${d.avgCheck?.includes('$') ? '$' : '₽'}` : '[рассчитать]';
-    })())
-    .replace(/\{lost_revenue\}/g, (() => {
-      const check = parseFloat(d.avgCheck?.replace(/[^\d.]/g, '') || '0');
-      const clients = parseInt(d.clientsPerMonth?.replace(/[^\d]/g, '') || '0');
-      const rev = check * clients * 0.2;
-      return rev ? `${Math.round(rev).toLocaleString()}${d.avgCheck?.includes('$') ? '$' : '₽'}` : '[рассчитать]';
-    })())
-    .replace(/\{current_spend\}/g, d.marketingBudget || 'ваш текущий бюджет')
-    .replace(/\{competitor\}/g, d.competitorsUsingReferral || 'ваши конкуренты')
-    .replace(/\{pain\}/g, d.painPoints || 'ключевая проблема')
-    .replace(/\{revenue\}/g, (() => {
-      const check = parseFloat(d.avgCheck?.replace(/[^\d.]/g, '') || '0');
-      const rev = check * 50 * 3;
-      return rev ? `${Math.round(rev).toLocaleString()}${d.avgCheck?.includes('$') ? '$' : '₽'}` : '[рассчитать]';
-    })());
+    .replace(/\{category\}/g, categoryName)
+    .replace(/\{subcategory\}/g, subcategory)
+    .replace(/\{characteristics\}/g, selectedChars || 'ваши особенности')
+    .replace(/\{goals\}/g, selectedGoals || 'развитие бизнеса')
+    .replace(/\{pains\}/g, selectedPains || 'текущие сложности')
+    .replace(/\{additional\}/g, d.additionalNotes || '');
 }
 
 export default function ScriptGenerator({ methodology, companyData }: Props) {
@@ -87,8 +81,7 @@ export default function ScriptGenerator({ methodology, companyData }: Props) {
     let fullScript = `# СКРИПТ ВСТРЕЧИ — ПРОДАЖА SETHUBBLE\n`;
     fullScript += `Методика: ${methodology.name}\n`;
     if (companyData.businessName) fullScript += `Бизнес клиента: ${companyData.businessName}\n`;
-    if (companyData.industry) fullScript += `Сфера: ${companyData.industry}\n`;
-    if (companyData.clientName) fullScript += `Контакт: ${companyData.clientName}\n`;
+    if (companyData.businessSubcategory) fullScript += `Тип: ${companyData.businessSubcategory}\n`;
     fullScript += `\n---\n\n`;
 
     methodology.sections.forEach((_, i) => {
@@ -102,9 +95,11 @@ export default function ScriptGenerator({ methodology, companyData }: Props) {
     navigator.clipboard.writeText(text);
   };
 
+  const category = businessCategories.find(c => c.id === companyData.businessCategory);
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
             <span className="text-xl">{methodology.icon}</span>
@@ -113,7 +108,7 @@ export default function ScriptGenerator({ methodology, companyData }: Props) {
             <h2 className="text-xl font-bold text-gray-900">Скрипт: {methodology.name}</h2>
             <p className="text-sm text-gray-500">
               {companyData.businessName ? `Для: ${companyData.businessName}` : 'Персонализированный скрипт'}
-              {companyData.industry ? ` • ${companyData.industry}` : ''}
+              {companyData.businessSubcategory ? ` • ${companyData.businessSubcategory}` : ''}
             </p>
           </div>
         </div>
@@ -147,6 +142,59 @@ export default function ScriptGenerator({ methodology, companyData }: Props) {
           </button>
         </div>
       </div>
+
+      {/* Business summary */}
+      {(companyData.businessName || companyData.businessSubcategory) && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-200">
+          <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+            <span>🎯</span> Контекст для скрипта
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            {companyData.businessName && (
+              <p><strong>Бизнес:</strong> {companyData.businessName}</p>
+            )}
+            {companyData.businessSubcategory && (
+              <p><strong>Тип:</strong> {companyData.businessSubcategory}</p>
+            )}
+            {companyData.characteristics?.length > 0 && (
+              <p>
+                <strong>Особенности:</strong>{' '}
+                {companyData.characteristics
+                  .map((id: string) => businessCharacteristics.find((c: any) => c.id === id)?.label)
+                  .filter(Boolean)
+                  .slice(0, 4)
+                  .join(', ')}
+              </p>
+            )}
+            {companyData.mainGoals?.length > 0 && (
+              <p>
+                <strong>Цели:</strong>{' '}
+                {companyData.mainGoals
+                  .map((id: string) => businessGoals.find((g: any) => g.id === id)?.label)
+                  .filter(Boolean)
+                  .join(', ')}
+              </p>
+            )}
+            {companyData.mainPains?.length > 0 && (
+              <p>
+                <strong>Боли:</strong>{' '}
+                {companyData.mainPains
+                  .map((id: string) => businessPains.find((p: any) => p.id === id)?.label)
+                  .filter(Boolean)
+                  .join(', ')}
+              </p>
+            )}
+            {companyData.mapLink && (
+              <p>
+                <strong>Карта:</strong>{' '}
+                <a href={companyData.mapLink} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
+                  Открыть
+                </a>
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Pricing block */}
       {showPricing && (
@@ -388,12 +436,12 @@ export default function ScriptGenerator({ methodology, companyData }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {[
             'Изучить сайт и соцсети бизнеса клиента',
+            'Открыть компанию на картах (2ГИС/Яндекс/Google)',
             'Подготовить расчёт ROI на его цифрах',
             'Открыть демо sethubble.com — показать интерфейс',
             'Подготовить ответы на возражения (крипта, MLM)',
             'Иметь готовую ссылку на регистрацию',
             'Подготовить PDF-флайер для демонстрации',
-            'Узнать имена и роли участников встречи',
             'Поставить цель: подключение на бесплатном плане'
           ].map((item, i) => (
             <label key={i} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer hover:text-indigo-700 transition-colors">

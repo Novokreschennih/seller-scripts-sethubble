@@ -1,29 +1,21 @@
 import { useState } from 'react';
-import { methodologies } from './data/methodologies';
+import { methodologies, CompanyData } from './data/methodologies';
 import MethodologySelector from './components/MethodologySelector';
-import CompanyProfile, { CompanyData } from './components/CompanyProfile';
+import CompanyProfile from './components/CompanyProfile';
 import ScriptGenerator from './components/ScriptGenerator';
 import ObjectionHandler from './components/ObjectionHandler';
 
 type Tab = 'methodology' | 'profile' | 'script' | 'objections';
 
 const initialCompanyData: CompanyData = {
-  clientName: '',
   businessName: '',
-  industry: '',
-  businessType: '',
-  companySize: '',
-  avgCheck: '',
-  clientsPerMonth: '',
-  currentMarketing: '',
-  marketingBudget: '',
-  clientAcquisitionCost: '',
-  painPoints: '',
-  referralSystem: '',
-  meetingGoal: '',
-  decisionMaker: '',
-  competitorsUsingReferral: '',
-  additionalInfo: '',
+  mapLink: '',
+  businessCategory: '',
+  businessSubcategory: '',
+  characteristics: [],
+  mainGoals: [],
+  mainPains: [],
+  additionalNotes: '',
 };
 
 export default function App() {
@@ -48,7 +40,7 @@ export default function App() {
     if (selectedMethodologyId) completed++;
     
     steps++;
-    if (companyData.businessName && companyData.industry && companyData.avgCheck) completed++;
+    if (companyData.businessName && companyData.businessCategory && companyData.mainGoals?.length > 0) completed++;
     
     return { steps, completed, percentage: Math.round((completed / steps) * 100) };
   };
