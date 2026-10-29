@@ -10,6 +10,7 @@ interface Props {
   selectedModel?: string;
   onSaveScript?: (content: string) => void;
   onOpenROI?: () => void;
+  onOpenCommercialProposal?: () => void;
 }
 
 function personalize(phrase: string, d: CompanyData): string {
@@ -24,7 +25,7 @@ function personalize(phrase: string, d: CompanyData): string {
     .replace(/\{additional\}/g, d.additionalNotes || '');
 }
 
-export default function ScriptGenerator({ methodology, companyData, apiKey, selectedModel, onSaveScript, onOpenROI }: Props) {
+export default function ScriptGenerator({ methodology, companyData, apiKey, selectedModel, onSaveScript, onOpenROI, onOpenCommercialProposal }: Props) {
   const [expandedSections, setExpandedSections] = useState<number[]>(
     methodology.sections.map((_, i) => i)
   );
@@ -222,6 +223,14 @@ export default function ScriptGenerator({ methodology, companyData, apiKey, sele
               className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm font-medium"
             >
               🧮 ROI
+            </button>
+          )}
+          {onOpenCommercialProposal && (
+            <button
+              onClick={onOpenCommercialProposal}
+              className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium"
+            >
+              📄 КП
             </button>
           )}
           <button

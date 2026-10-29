@@ -10,9 +10,11 @@ import ModelSelector from './components/ModelSelector';
 import ScriptHistory from './components/ScriptHistory';
 import ROICalculator from './components/ROICalculator';
 import FunnelTemplates from './components/FunnelTemplates';
+import CommercialProposal from './components/CommercialProposal';
+import KnowledgeBase from './components/KnowledgeBase';
 import { useScriptHistory, SavedScript } from './hooks/useScriptHistory';
 
-type Tab = 'settings' | 'methodology' | 'profile' | 'script' | 'funnel' | 'objections' | 'trainer' | 'history';
+type Tab = 'settings' | 'methodology' | 'profile' | 'script' | 'funnel' | 'objections' | 'trainer' | 'history' | 'knowledge';
 
 const initialCompanyData: CompanyData = {
   businessName: '',
@@ -44,6 +46,7 @@ export default function App() {
   // История скриптов
   const { scripts, saveScript, deleteScript, toggleFavorite, clearHistory } = useScriptHistory();
   const [showROICalculator, setShowROICalculator] = useState(false);
+  const [showCommercialProposal, setShowCommercialProposal] = useState(false);
   const [currentScriptContent, setCurrentScriptContent] = useState<string>('');
 
   useEffect(() => {
@@ -81,7 +84,8 @@ export default function App() {
     { id: 'funnel', label: 'Этапы воронки', icon: '📊' },
     { id: 'objections', label: 'Возражения', icon: '🛡️' },
     { id: 'trainer', label: 'Тренажёр', icon: '🎭' },
-    { id: 'history', label: 'История', icon: '📚' },
+    { id: 'knowledge', label: 'База знаний', icon: '📚' },
+    { id: 'history', label: 'История', icon: '💾' },
   ];
 
   const getProgress = () => {
@@ -304,6 +308,7 @@ export default function App() {
                 alert('✅ Скрипт сохранён в историю!');
               }}
               onOpenROI={() => setShowROICalculator(true)}
+              onOpenCommercialProposal={() => setShowCommercialProposal(true)}
             />
             <div className="mt-6 flex justify-between">
               <button
@@ -357,6 +362,12 @@ export default function App() {
           </div>
         )}
 
+        {activeTab === 'knowledge' && (
+          <div>
+            <KnowledgeBase />
+          </div>
+        )}
+
         {activeTab === 'history' && (
           <div>
             <ScriptHistory
@@ -373,6 +384,14 @@ export default function App() {
           </div>
         )}
       </main>
+
+      {/* Коммерческое предложение */}
+      {showCommercialProposal && (
+        <CommercialProposal
+          companyData={companyData}
+          onClose={() => setShowCommercialProposal(false)}
+        />
+      )}
 
       {/* Калькулятор ROI */}
       {showROICalculator && (

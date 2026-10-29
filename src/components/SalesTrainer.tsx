@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { CompanyData } from '../data/methodologies';
 import { generateWithPolza, PolzaMessage } from '../utils/polza';
+import SmartFeedback from './SmartFeedback';
+import VoiceControls from './VoiceControls';
 
 interface Props {
   companyData: CompanyData;
@@ -396,6 +398,23 @@ ${moodDescription}
               Отправить
             </button>
           </div>
+
+          {/* Голосовые функции */}
+          <VoiceControls 
+            text={messages.map(m => m.content).join('\n')}
+            onTranscript={(text) => setInput(text)}
+          />
+
+          {/* Умные подсказки */}
+          {input.trim() && (
+            <SmartFeedback
+              userMessage={input}
+              apiKey={apiKey}
+              selectedModel={selectedModel}
+              scenario={scenarios.find(s => s.id === scenario)?.name || ''}
+              mood={moods.find(m => m.id === mood)?.name || ''}
+            />
+          )}
         </div>
       )}
 
