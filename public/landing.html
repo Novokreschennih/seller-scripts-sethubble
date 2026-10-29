@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScriptForge — Генератор скриптов продаж SetHubble</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+    
+    <!-- Header -->
+    <header class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+                        <span class="text-white text-xl font-bold">S</span>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900 dark:text-white">ScriptForge</h1>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Генератор скриптов продаж</p>
+                    </div>
+                </div>
+                <a href="index.html" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium">
+                    Открыть приложение
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 animate-fade-in">
+        <div class="max-w-7xl mx-auto text-center">
+            <div class="inline-block mb-6">
+                <span class="px-4 py-2 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-medium">
+                    🚀 Новый инструмент для продажников
+                </span>
+            </div>
+            <h1 class="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6 animate-slide-up">
+                Продавайте <span class="gradient-text">SetHubble</span><br>
+                как профессионал
+            </h1>
+            <p class="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+                Генератор скриптов продаж с ИИ-помощником. Персонализированные сценарии, тренажёр с ролевыми играми, работа с возражениями — всё в одном приложении.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="index.html" class="px-8 py-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all font-medium text-lg shadow-lg shadow-indigo-200 dark:shadow-indigo-900/50 hover:scale-105">
+                    Начать бесплатно →
+                </a>
+                <a href="#features" class="px-8 py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors font-medium text-lg">
+                    Узнать больше
+                </a>
+            </div>
+            <p class="mt-6 text-sm text-gray-500 dark:text-gray-400">
+                ✓ Бесплатно &nbsp; ✓ Без регистрации &nbsp; ✓ Работает в браузере
+            </p>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                    Знакомые проблемы?
+                </h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300">
+                    ScriptForge решает их все
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-red-50 dark:bg-red-900/20 rounded-xl p-6 border-2 border-red-200 dark:border-red-800">
+                    <div class="text-4xl mb-4">😰</div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                        Не знаете, что говорить?
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Идёте на встречу и не уверены в своих словах? Боитесь забыть важные моменты?
+                    </p>
+                    <div class="mt-4 pt-4 border-t border-red-200 dark:border-red-800">
+                        <p class="text-sm font-medium text-red-700 dark:text-red-400">
+                            ✓ ScriptForge создаёт готовые скрипты под ваш бизнес
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-orange-50 dark:bg-orange-900/20 rounded-xl p-6 border-2 border-orange-200 dark:border-orange-800">
+                    <div class="text-4xl mb-4">😤</div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                        Клиент возражает?
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        "Дорого", "Это MLM", "Не работаю с криптой" — не знаете, как ответить?
+                    </p>
+                    <div class="mt-4 pt-4 border-t border-orange-200 dark:border-orange-800">
+                        <p class="text-sm font-medium text-orange-700 dark:text-orange-400">
+                            ✓ Готовые ответы на все типичные возражения
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-6 border-2 border-yellow-200 dark:border-yellow-800">
+                    <div class="text-4xl mb-4">🤷</div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                        Нет опыта продаж?
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Только начали продавать SetHubble и не знаете, с чего начать?
+                    </p>
+                    <div class="mt-4 pt-4 border-t border-yellow-200 dark:border-yellow-800">
+                        <p class="text-sm font-medium text-yellow-700 dark:text-yellow-400">
+                            ✓ Тренажёр с ИИ-клиентом для практики
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                    Всё для успешных продаж
+                </h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300">
+                    Полный набор инструментов в одном приложении
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700 hover:shadow-2xl transition-shadow">
+                    <div class="w-14 h-14 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl flex items-center justify-center mb-4">
+                        <span class="text-3xl">📋</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                        6 методик продаж
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        SPIN, PAS, AIDA, Challenger, Sandler, FAB — выбирайте методику под ситуацию и клиента.
+                    </p>
+                    <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-500 mt-1">✓</span>
+                            <span>Персонализированные скрипты под ваш бизнес</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-500 mt-1">✓</span>
+                            <span>Пошаговые инструкции для каждого этапа</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-500 mt-1">✓</span>
+                            <span>Готовые фразы и вопросы</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700 hover:shadow-2xl transition-shadow">
+                    <div class="w-14 h-14 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl flex items-center justify-center mb-4">
+                        <span class="text-3xl">🎭</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                        Тренажёр с ИИ
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        Практикуйтесь в продажах с ИИ-клиентом. 6 сценариев × 6 настроений = 36 комбинаций.
+                    </p>
+                    <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-500 mt-1">✓</span>
+                            <span>Реалистичные диалоги с ИИ</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-500 mt-1">✓</span>
+                            <span>Разные типы клиентов (вежливый, скептик, грубый...)</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-500 mt-1">✓</span>
+                            <span>Отработка возражений в безопасной среде</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700 hover:shadow-2xl transition-shadow">
+                    <div class="w-14 h-14 bg-rose-100 dark:bg-rose-900/50 rounded-xl flex items-center justify-center mb-4">
+                        <span class="text-3xl">🛡️</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                        Работа с возражениями
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        Готовые ответы на все типичные возражения. "Дорого", "Это MLM", "Не работаю с криптой" и другие.
+                    </p>
+                    <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-500 mt-1">✓</span>
+                            <span>6 основных возражений с ответами</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-500 mt-1">✓</span>
+                            <span>Техники работы с каждым возражением</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-500 mt-1">✓</span>
+                            <span>Копирование ответов в один клик</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700 hover:shadow-2xl transition-shadow">
+                    <div class="w-14 h-14 bg-purple-100 dark:bg-purple-900/50 rounded-xl flex items-center justify-center mb-4">
+                        <span class="text-3xl">🤖</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                        ИИ-генерация скриптов
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        С API-ключом Polza.ai получайте уникальные скрипты под конкретный бизнес с выбором тона общения.
+                    </p>
+                    <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-500 mt-1">✓</span>
+                            <span>9 ИИ-моделей на выбор (от 11₽ за 1M токенов)</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-500 mt-1">✓</span>
+                            <span>4 тона общения (деловой, дружеский, экспертный, эмпатичный)</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-500 mt-1">✓</span>
+                            <span>Полная персонализация под бизнес клиента</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                    Как это работает?
+                </h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300">
+                    4 простых шага до успешной продажи
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-indigo-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+                        1
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Выберите методику
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        SPIN, PAS, AIDA или другую — под вашу ситуацию
+                    </p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-indigo-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+                        2
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Заполните профиль
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Укажите категорию бизнеса клиента (30 секунд)
+                    </p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-indigo-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+                        3
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Получите скрипт
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Персонализированный сценарий встречи готов
+                    </p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-indigo-600 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+                        4
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Потренируйтесь
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Отработайте навыки в тренажёре с ИИ-клиентом
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                    Почему ScriptForge?
+                </h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300">
+                    Преимущества, которые делают разницу
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="text-5xl mb-4">⚡</div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Быстро
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Скрипт готов за 30 секунд. Не нужно тратить часы на подготовку.
+                    </p>
+                </div>
+
+                <div class="text-center">
+                    <div class="text-5xl mb-4">🎯</div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Точно
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Персонализация под конкретный бизнес и ситуацию клиента.
+                    </p>
+                </div>
+
+                <div class="text-center">
+                    <div class="text-5xl mb-4">💪</div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Эффективно
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Проверенные методики продаж + практика с ИИ = результат.
+                    </p>
+                </div>
+
+                <div class="text-center">
+                    <div class="text-5xl mb-4">🆓</div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Бесплатно
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Базовые функции полностью бесплатны. Без подписок и скрытых платежей.
+                    </p>
+                </div>
+
+                <div class="text-center">
+                    <div class="text-5xl mb-4">🔒</div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Приватно
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Все данные хранятся локально в вашем браузере. Никаких серверов.
+                    </p>
+                </div>
+
+                <div class="text-center">
+                    <div class="text-5xl mb-4">🌙</div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        Удобно
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Светлая и тёмная тема. Работает на любом устройстве.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-indigo-600 to-purple-600">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
+                Готовы продавать как профи?
+            </h2>
+            <p class="text-xl text-indigo-100 mb-8">
+                Начните использовать ScriptForge прямо сейчас — это бесплатно и займёт меньше минуты.
+            </p>
+            <a href="index.html" class="inline-block px-10 py-5 bg-white text-indigo-600 rounded-xl hover:bg-gray-100 transition-all font-bold text-xl shadow-2xl hover:scale-105">
+                Открыть приложение →
+            </a>
+            <p class="mt-6 text-indigo-200">
+                Не требует регистрации • Работает в браузере • Бесплатно навсегда
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white text-xl font-bold">S</span>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-bold">ScriptForge</h3>
+                            <p class="text-xs">Генератор скриптов продаж</p>
+                        </div>
+                    </div>
+                    <p class="text-sm">
+                        Профессиональный инструмент для продажи платформы SetHubble.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4">Возможности</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li>6 методик продаж</li>
+                        <li>Тренажёр с ИИ</li>
+                        <li>Работа с возражениями</li>
+                        <li>ИИ-генерация скриптов</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4">Ресурсы</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="https://sethubble.com" target="_blank" class="hover:text-white transition-colors">SetHubble.com</a></li>
+                        <li><a href="https://polza.ai" target="_blank" class="hover:text-white transition-colors">Polza.ai (ИИ API)</a></li>
+                        <li><a href="index.html" class="hover:text-white transition-colors">Открыть приложение</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-center text-sm">
+                <p>© 2026 ScriptForge. Создано для партнёров SetHubble.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
