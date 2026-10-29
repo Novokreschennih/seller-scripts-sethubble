@@ -5,8 +5,9 @@ import CompanyProfile from './components/CompanyProfile';
 import ScriptGenerator from './components/ScriptGenerator';
 import ObjectionHandler from './components/ObjectionHandler';
 import ApiKeyManager from './components/ApiKeyManager';
+import SalesTrainer from './components/SalesTrainer';
 
-type Tab = 'methodology' | 'profile' | 'script' | 'objections';
+type Tab = 'methodology' | 'profile' | 'script' | 'objections' | 'trainer';
 
 const initialCompanyData: CompanyData = {
   businessName: '',
@@ -55,6 +56,7 @@ export default function App() {
     { id: 'profile', label: 'Профиль клиента', icon: '🏢' },
     { id: 'script', label: 'Скрипт', icon: '📝', disabled: !selectedMethodology },
     { id: 'objections', label: 'Возражения', icon: '🛡️' },
+    { id: 'trainer', label: 'Тренажёр', icon: '🎭' },
   ];
 
   const getProgress = () => {
@@ -254,6 +256,12 @@ export default function App() {
                 Вернуться к скрипту
               </button>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'trainer' && (
+          <div>
+            <SalesTrainer companyData={companyData} apiKey={apiKey} />
           </div>
         )}
       </main>

@@ -31,6 +31,22 @@ export default function ScriptGenerator({ methodology, companyData, apiKey }: Pr
   const [useAI, setUseAI] = useState(!!apiKey);
   const [showFAQ, setShowFAQ] = useState(false);
   const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null);
+  const [tone, setTone] = useState<string>(() => {
+    return localStorage.getItem('script_tone') || 'professional';
+  });
+
+  const tones = [
+    { id: 'professional', name: 'Деловой', icon: '💼', description: 'Официальный, структурированный' },
+    { id: 'friendly', name: 'Дружеский', icon: '🤝', description: 'Неформальный, тёплый' },
+    { id: 'expert', name: 'Экспертный', icon: '🎓', description: 'Убедительный, с фактами' },
+    { id: 'empathetic', name: 'Эмпатичный', icon: '💚', description: 'Поддерживающий, понимающий' }
+  ];
+
+  const handleToneChange = (newTone: string) => {
+    setTone(newTone);
+    localStorage.setItem('script_tone', newTone);
+    setAiPhrases({});
+  };
 
   const toggleSection = (index: number) => {
     setExpandedSections(prev =>
@@ -87,7 +103,8 @@ export default function ScriptGenerator({ methodology, companyData, apiKey }: Pr
         methodology.name,
         companyData,
         section.title,
-        section.description
+        section.description,
+        tone
       );
       
       const response = await generateWithPolza(apiKey, messages);
@@ -131,13 +148,41 @@ export default function ScriptGenerator({ methodology, companyData, apiKey }: Pr
             </p>
           </div>
         </div>
-        <div className="flex gap-2 flex-wrap">
-          <button
-            onClick={() => setShowPricing(!showPricing)}
-            className={`flex items-center gap-2 px-3 py-2 border rounded-lg transition-colors text-sm font-medium ${showPricing ? 'bg-indigo-50 border-indigo-300 text-indigo-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
-          >
-            💰 Тарифы
-          </button>
+      </div>
+
+      {/* Tone selector */}
+      {apiKey && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-4">
+          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+            <span>🎭</span> Тон общения (для ИИ-генерации)
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            {tones.map(t => (
+              <button
+                key={t.id}
+                onClick={() => handleToneChange(t.id)}
+                className={`p-3 rounded-lg border-2 transition-all text-left ${
+                  tone === t.id
+                    ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600'
+                }`}
+              >
+                <div className="text-xl mb-1">{t.icon}</div>
+                <div className="text-sm font-medium text-gray-900 dark:text-white">{t.name}</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">{t.description}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="flex gap-2 flex-wrap mb-4">
+        <button
+          onClick={() => setShowPricing(!showPricing)}
+          className={`flex items-center gap-2 px-3 py-2 border rounded-lg transition-colors text-sm font-medium ${showPricing ? 'bg-indigo-50 border-indigo-300 text-indigo-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+        >
+          💰 Тарифы
+        </button>
           <button
             onClick={() => setShowCommission(!showCommission)}
             className={`flex items-center gap-2 px-3 py-2 border rounded-lg transition-colors text-sm font-medium ${showCommission ? 'bg-emerald-50 border-emerald-300 text-emerald-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
@@ -159,7 +204,6 @@ export default function ScriptGenerator({ methodology, companyData, apiKey }: Pr
             </svg>
             Копировать
           </button>
-        </div>
       </div>
 
       {/* Business summary */}
