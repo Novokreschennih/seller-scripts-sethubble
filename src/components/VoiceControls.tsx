@@ -28,8 +28,11 @@ export default function VoiceControls({ onTranscript, text }: Props) {
           }
         }
         if (finalTranscript) {
-          setTranscript(prev => prev + finalTranscript);
-          onTranscript?.(transcript + finalTranscript);
+          setTranscript(prev => {
+            const newTranscript = prev + finalTranscript;
+            onTranscript?.(newTranscript);
+            return newTranscript;
+          });
         }
       };
 
