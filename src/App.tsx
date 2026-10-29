@@ -8,7 +8,7 @@ import ApiKeyManager from './components/ApiKeyManager';
 import SalesTrainer from './components/SalesTrainer';
 import ModelSelector from './components/ModelSelector';
 
-type Tab = 'methodology' | 'profile' | 'script' | 'objections' | 'trainer';
+type Tab = 'settings' | 'methodology' | 'profile' | 'script' | 'objections' | 'trainer';
 
 const initialCompanyData: CompanyData = {
   businessName: '',
@@ -19,7 +19,10 @@ const initialCompanyData: CompanyData = {
 };
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<Tab>('methodology');
+  const [activeTab, setActiveTab] = useState<Tab>(() => {
+    const hasKey = localStorage.getItem('polza_api_key');
+    return hasKey ? 'methodology' : 'settings';
+  });
   const [selectedMethodologyId, setSelectedMethodologyId] = useState<string | null>(null);
   const [companyData, setCompanyData] = useState<CompanyData>(initialCompanyData);
   const [apiKey, setApiKey] = useState<string>(() => {
@@ -62,6 +65,7 @@ export default function App() {
   const selectedMethodology = methodologies.find(m => m.id === selectedMethodologyId) || null;
 
   const tabs: { id: Tab; label: string; icon: string; disabled?: boolean }[] = [
+    { id: 'settings', label: 'Настройки', icon: '⚙️' },
     { id: 'methodology', label: 'Методика', icon: '📋' },
     { id: 'profile', label: 'Профиль клиента', icon: '🏢' },
     { id: 'script', label: 'Скрипт', icon: '📝', disabled: !selectedMethodology },
@@ -111,6 +115,20 @@ export default function App() {
                 </div>
                 <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">{progress.percentage}%</span>
               </div>
+
+              {/* API Status Indicator */}
+              <button
+                onClick={() => setActiveTab('settings')}
+                className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  apiKey
+                    ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/50'
+                    : 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50'
+                }`}
+                title={apiKey ? 'API настроен' : 'Настроить API'}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${apiKey ? 'bg-green-500' : 'bg-amber-500'}`}></span>
+                <span>{apiKey ? 'API ✓' : 'Настроить API'}</span>
+              </button>
               
               {/* Theme Toggle Button */}
               <button
@@ -152,6 +170,9 @@ export default function App() {
               >
                 <span>{tab.icon}</span>
                 <span>{tab.label}</span>
+                {tab.id === 'settings' && apiKey && (
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                )}
                 {tab.id === 'methodology' && selectedMethodologyId && (
                   <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                 )}
@@ -166,15 +187,41 @@ export default function App() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* API Key Manager - показываем всегда вверху */}
-        <div className="mb-4">
-          <ApiKeyManager apiKey={apiKey} onChange={setApiKey} />
-        </div>
+        {activeTab === 'settings' && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
+                <span className="text-xl">⚙️</span>
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Настройки</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">API-ключ и выбор ИИ-модели</p>
+              </div>
+            </div>
 
-        {/* Model Selector - показываем только если есть ключ */}
-        {apiKey && (
-          <div className="mb-6">
-            <ModelSelector selectedModel={selectedModel} onChange={setSelectedModel} />
+            <ApiKeyManager apiKey={apiKey} onChange={setApiKey} />
+
+            {apiKey && (
+              <ModelSelector selectedModel={selectedModel} onChange={setSelectedModel} />
+            )}
+
+            {!apiKey && (
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-5 border border-blue-200 dark:border-blue-800">
+                <h3 className="font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                  <span>💡</span> Зачем нужен API-ключ?
+                </h3>
+                <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                  <p>Без ключа приложение работает с <strong>заготовленными шаблонами</strong> — этого достаточно для базовых скриптов.</p>
+                  <p>С ключом Polza.ai вы получаете:</p>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>🎭 <strong>Тренажёр продаж</strong> — ИИ играет роль клиента</li>
+                    <li>✨ <strong>ИИ-генерация скриптов</strong> — уникальные фразы под ваш бизнес</li>
+                    <li>🎭 <strong>Выбор тона</strong> — деловой, дружеский, экспертный, эмпатичный</li>
+                  </ul>
+                  <p className="mt-3">Получить ключ: <a href="https://polza.ai/dashboard/api-keys" target="_blank" rel="noopener noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">polza.ai/dashboard/api-keys</a></p>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
