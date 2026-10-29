@@ -9,9 +9,10 @@ import SalesTrainer from './components/SalesTrainer';
 import ModelSelector from './components/ModelSelector';
 import ScriptHistory from './components/ScriptHistory';
 import ROICalculator from './components/ROICalculator';
+import FunnelTemplates from './components/FunnelTemplates';
 import { useScriptHistory, SavedScript } from './hooks/useScriptHistory';
 
-type Tab = 'settings' | 'methodology' | 'profile' | 'script' | 'objections' | 'trainer' | 'history';
+type Tab = 'settings' | 'methodology' | 'profile' | 'script' | 'funnel' | 'objections' | 'trainer' | 'history';
 
 const initialCompanyData: CompanyData = {
   businessName: '',
@@ -77,6 +78,7 @@ export default function App() {
     { id: 'methodology', label: 'Методика', icon: '📋' },
     { id: 'profile', label: 'Профиль клиента', icon: '🏢' },
     { id: 'script', label: 'Скрипт', icon: '📝', disabled: !selectedMethodology },
+    { id: 'funnel', label: 'Этапы воронки', icon: '📊' },
     { id: 'objections', label: 'Возражения', icon: '🛡️' },
     { id: 'trainer', label: 'Тренажёр', icon: '🎭' },
     { id: 'history', label: 'История', icon: '📚' },
@@ -323,6 +325,12 @@ export default function App() {
                 </svg>
               </button>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'funnel' && (
+          <div>
+            <FunnelTemplates />
           </div>
         )}
 
