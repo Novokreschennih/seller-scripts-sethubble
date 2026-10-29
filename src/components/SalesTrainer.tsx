@@ -16,10 +16,50 @@ interface Message {
 
 export default function SalesTrainer({ companyData, apiKey, selectedModel }: Props) {
   const [scenario, setScenario] = useState<string>('');
+  const [mood, setMood] = useState<string>('polite');
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
+
+  const moods = [
+    {
+      id: 'polite',
+      name: 'Вежливый',
+      icon: '😊',
+      description: 'Открытый, дружелюбный, готов слушать'
+    },
+    {
+      id: 'skeptical',
+      name: 'Скептический',
+      icon: '🤨',
+      description: 'Сомневается, требует доказательств'
+    },
+    {
+      id: 'rude',
+      name: 'Грубый',
+      icon: '😤',
+      description: 'Раздражённый, может хамить'
+    },
+    {
+      id: 'distracted',
+      name: 'Отвлечённый',
+      icon: '⏰',
+      description: 'Занят, торопится, отвечает коротко'
+    },
+    {
+      id: 'interested',
+      name: 'Заинтересованный',
+      icon: '🤩',
+      description: 'Активно интересуется, хочет узнать больше'
+    },
+    {
+      id: 'indifferent',
+      name: 'Безразличный',
+      icon: '😐',
+      description: 'Пассивный, без эмоций, "ну давайте"'
+    }
+  ];
 
   const scenarios = [
     {
@@ -61,7 +101,7 @@ export default function SalesTrainer({ companyData, apiKey, selectedModel }: Pro
   ];
 
   const startScenario = async () => {
-    if (!apiKey || !scenario) return;
+    if (!apiKey || !scenario || !mood) return;
 
     setIsLoading(true);
     setIsStarted(true);
@@ -71,7 +111,7 @@ export default function SalesTrainer({ companyData, apiKey, selectedModel }: Pro
     const businessName = companyData.businessName || 'ваш бизнес';
     const businessType = companyData.businessSubcategory || 'бизнес';
 
-    const systemPrompt = getScenarioPrompt(scenario, businessName, businessType);
+    const systemPrompt = getScenarioPrompt(scenario, businessName, businessType, mood);
 
     try {
       const response = await generateWithPolza(
@@ -96,13 +136,24 @@ export default function SalesTrainer({ companyData, apiKey, selectedModel }: Pro
     }
   };
 
-  const getScenarioPrompt = (scenarioId: string, businessName: string, businessType: string): string => {
+  const getScenarioPrompt = (scenarioId: string, businessName: string, businessType: string, moodId: string): string => {
+    const moodDescriptions: Record<string, string> = {
+      'polite': 'Ты вежливый и открытый. Готов слушать, задаёшь вопросы, дружелюбен. Отвечаешь спокойно и конструктивно.',
+      'skeptical': 'Ты скептический и недоверчивый. Сомневаешься во всём, требуешь доказательств и конкретных цифр. Критичен к заявлениям.',
+      'rude': 'Ты грубый и раздражённый. Недоволен тем, что тебя отвлекают. Можешь хамить, отвечать резко, перебивать. Терпение на исходе.',
+      'distracted': 'Ты отвлечённый и занятый. Постоянно торопишься, отвечаешь коротко, хочешь быстрее закончить разговор. Проверяешь телефон.',
+      'interested': 'Ты заинтересованный и увлечённый. Активно задаёшь вопросы, хочешь узнать больше деталей. Видишь потенциал в предложении.',
+      'indifferent': 'Ты безразличный и пассивный. Не проявляешь эмоций, отвечаешь односложно. "Ну давайте", "может быть", "посмотрим". Тебе всё равно.'
+    };
+
+    const moodDescription = moodDescriptions[moodId] || moodDescriptions['polite'];
+
     const basePrompt = `Ты — ${businessName ? `владелец бизнеса "${businessName}"` : 'предприниматель'}, который работает в сфере "${businessType}". 
-Ты скептически относишься к новым предложениям, но готов выслушать, если увидишь реальную пользу.
 Твоя задача — играть роль клиента на встрече с продавцом платформы SetHubble.
 
-Отвечай кратко (2-3 предложения), задавай уточняющие вопросы, выражай сомнения, но будь реалистичным.
-Не соглашайся сразу — требуй аргументов и доказательств.`;
+${moodDescription}
+
+Отвечай кратко (2-3 предложения), но в соответствии со своим настроением. Будь реалистичным и последовательным в своём поведении.`;
 
     const scenarioPrompts: Record<string, string> = {
       'cold_meeting': `${basePrompt}
@@ -220,7 +271,7 @@ export default function SalesTrainer({ companyData, apiKey, selectedModel }: Pro
       {!isStarted ? (
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Выберите сценарий
+            1. Выберите сценарий
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
             {scenarios.map(s => (
@@ -240,9 +291,30 @@ export default function SalesTrainer({ companyData, apiKey, selectedModel }: Pro
             ))}
           </div>
 
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            2. Выберите настроение клиента
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+            {moods.map(m => (
+              <button
+                key={m.id}
+                onClick={() => setMood(m.id)}
+                className={`p-4 rounded-lg border-2 transition-all text-left ${
+                  mood === m.id
+                    ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600'
+                }`}
+              >
+                <div className="text-3xl mb-2">{m.icon}</div>
+                <div className="font-medium text-gray-900 dark:text-white">{m.name}</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">{m.description}</div>
+              </button>
+            ))}
+          </div>
+
           <button
             onClick={startScenario}
-            disabled={!scenario || isLoading}
+            disabled={!scenario || !mood || isLoading}
             className="w-full py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
           >
             {isLoading ? 'Запуск...' : 'Начать сценарий'}
@@ -251,9 +323,17 @@ export default function SalesTrainer({ companyData, apiKey, selectedModel }: Pro
       ) : (
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {scenarios.find(s => s.id === scenario)?.name}
-            </h3>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {scenarios.find(s => s.id === scenario)?.name}
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2 mt-1">
+                <span>Настроение клиента:</span>
+                <span className="font-medium text-gray-700 dark:text-gray-300">
+                  {moods.find(m => m.id === mood)?.icon} {moods.find(m => m.id === mood)?.name}
+                </span>
+              </p>
+            </div>
             <button
               onClick={resetScenario}
               className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -327,8 +407,9 @@ export default function SalesTrainer({ companyData, apiKey, selectedModel }: Pro
           <li>• Отвечайте так, как отвечали бы реальному клиенту</li>
           <li>• Используйте фразы из сгенерированных скриптов</li>
           <li>• Тренируйтесь работать с возражениями</li>
-          <li>• Пробуйте разные сценарии для разных ситуаций</li>
-          <li>• ИИ-клиент будет реагировать реалистично — не соглашайтесь сразу</li>
+          <li>• Пробуйте разные сценарии и настроения для комплексной подготовки</li>
+          <li>• ИИ-клиент будет реагировать в соответствии с выбранным настроением</li>
+          <li>• Начните с вежливого клиента, затем переходите к более сложным типам</li>
         </ul>
       </div>
     </div>
