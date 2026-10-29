@@ -10,7 +10,7 @@ export interface PolzaMessage {
 export async function generateWithPolza(
   apiKey: string,
   messages: PolzaMessage[],
-  model: string = 'openai/gpt-4o-mini'
+  model: string = 'deepseek/deepseek-v4.1-flash-1017'
 ): Promise<string> {
   const response = await fetch(`${POLZA_BASE_URL}/chat/completions`, {
     method: 'POST',

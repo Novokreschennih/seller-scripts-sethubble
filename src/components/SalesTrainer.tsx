@@ -5,6 +5,7 @@ import { generateWithPolza, PolzaMessage } from '../utils/polza';
 interface Props {
   companyData: CompanyData;
   apiKey?: string;
+  selectedModel?: string;
 }
 
 interface Message {
@@ -13,7 +14,7 @@ interface Message {
   timestamp: Date;
 }
 
-export default function SalesTrainer({ companyData, apiKey }: Props) {
+export default function SalesTrainer({ companyData, apiKey, selectedModel }: Props) {
   const [scenario, setScenario] = useState<string>('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -76,7 +77,7 @@ export default function SalesTrainer({ companyData, apiKey }: Props) {
       const response = await generateWithPolza(
         apiKey,
         [{ role: 'user', content: systemPrompt }],
-        'openai/gpt-4o-mini'
+        selectedModel || 'deepseek/deepseek-v4.1-flash-1017'
       );
 
       setMessages([{
@@ -163,7 +164,7 @@ export default function SalesTrainer({ companyData, apiKey }: Props) {
     });
 
     try {
-      const response = await generateWithPolza(apiKey, conversationHistory, 'openai/gpt-4o-mini');
+      const response = await generateWithPolza(apiKey, conversationHistory, selectedModel || 'deepseek/deepseek-v4.1-flash-1017');
 
       setMessages(prev => [...prev, {
         role: 'assistant',

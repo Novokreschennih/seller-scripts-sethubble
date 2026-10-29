@@ -6,6 +6,7 @@ interface Props {
   methodology: Methodology;
   companyData: CompanyData;
   apiKey?: string;
+  selectedModel?: string;
 }
 
 function personalize(phrase: string, d: CompanyData): string {
@@ -20,7 +21,7 @@ function personalize(phrase: string, d: CompanyData): string {
     .replace(/\{additional\}/g, d.additionalNotes || '');
 }
 
-export default function ScriptGenerator({ methodology, companyData, apiKey }: Props) {
+export default function ScriptGenerator({ methodology, companyData, apiKey, selectedModel }: Props) {
   const [expandedSections, setExpandedSections] = useState<number[]>(
     methodology.sections.map((_, i) => i)
   );
@@ -107,7 +108,7 @@ export default function ScriptGenerator({ methodology, companyData, apiKey }: Pr
         tone
       );
       
-      const response = await generateWithPolza(apiKey, messages);
+      const response = await generateWithPolza(apiKey, messages, selectedModel || 'deepseek/deepseek-v4.1-flash-1017');
       
       // Парсим ответ - извлекаем фразы из формата "1. "фраза""
       const phrases = response

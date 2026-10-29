@@ -6,6 +6,7 @@ import ScriptGenerator from './components/ScriptGenerator';
 import ObjectionHandler from './components/ObjectionHandler';
 import ApiKeyManager from './components/ApiKeyManager';
 import SalesTrainer from './components/SalesTrainer';
+import ModelSelector from './components/ModelSelector';
 
 type Tab = 'methodology' | 'profile' | 'script' | 'objections' | 'trainer';
 
@@ -24,6 +25,9 @@ export default function App() {
   const [apiKey, setApiKey] = useState<string>(() => {
     return localStorage.getItem('polza_api_key') || '';
   });
+  const [selectedModel, setSelectedModel] = useState<string>(() => {
+    return localStorage.getItem('polza_model') || 'deepseek/deepseek-v4.1-flash-1017';
+  });
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const stored = localStorage.getItem('theme');
     if (stored === 'dark' || stored === 'light') return stored;
@@ -37,6 +41,12 @@ export default function App() {
       localStorage.removeItem('polza_api_key');
     }
   }, [apiKey]);
+
+  useEffect(() => {
+    if (selectedModel) {
+      localStorage.setItem('polza_model', selectedModel);
+    }
+  }, [selectedModel]);
 
   useEffect(() => {
     localStorage.setItem('theme', theme);
@@ -157,9 +167,16 @@ export default function App() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* API Key Manager - показываем всегда вверху */}
-        <div className="mb-6">
+        <div className="mb-4">
           <ApiKeyManager apiKey={apiKey} onChange={setApiKey} />
         </div>
+
+        {/* Model Selector - показываем только если есть ключ */}
+        {apiKey && (
+          <div className="mb-6">
+            <ModelSelector selectedModel={selectedModel} onChange={setSelectedModel} />
+          </div>
+        )}
 
         {activeTab === 'methodology' && (
           <div>
@@ -218,6 +235,7 @@ export default function App() {
               methodology={selectedMethodology}
               companyData={companyData}
               apiKey={apiKey}
+              selectedModel={selectedModel}
             />
             <div className="mt-6 flex justify-between">
               <button
@@ -261,7 +279,7 @@ export default function App() {
 
         {activeTab === 'trainer' && (
           <div>
-            <SalesTrainer companyData={companyData} apiKey={apiKey} />
+            <SalesTrainer companyData={companyData} apiKey={apiKey} selectedModel={selectedModel} />
           </div>
         )}
       </main>
