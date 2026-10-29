@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Methodology, pricingPlans, commissionDistribution, tariffFAQ, businessCategories, CompanyData } from '../data/methodologies';
 import { generateWithPolza, buildPrompt } from '../utils/polza';
+import { exportToPDF, downloadMarkdown } from '../utils/exportUtils';
 
 interface Props {
   methodology: Methodology;
   companyData: CompanyData;
   apiKey?: string;
   selectedModel?: string;
+  onSaveScript?: (content: string) => void;
+  onOpenROI?: () => void;
 }
 
 function personalize(phrase: string, d: CompanyData): string {
@@ -21,7 +24,7 @@ function personalize(phrase: string, d: CompanyData): string {
     .replace(/\{additional\}/g, d.additionalNotes || '');
 }
 
-export default function ScriptGenerator({ methodology, companyData, apiKey, selectedModel }: Props) {
+export default function ScriptGenerator({ methodology, companyData, apiKey, selectedModel, onSaveScript, onOpenROI }: Props) {
   const [expandedSections, setExpandedSections] = useState<number[]>(
     methodology.sections.map((_, i) => i)
   );
@@ -204,6 +207,56 @@ export default function ScriptGenerator({ methodology, companyData, apiKey, sele
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
             </svg>
             Копировать
+          </button>
+          {onSaveScript && (
+            <button
+              onClick={() => onSaveScript(generateFullScript())}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+            >
+              💾 Сохранить
+            </button>
+          )}
+          {onOpenROI && (
+            <button
+              onClick={onOpenROI}
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm font-medium"
+            >
+              🧮 ROI
+            </button>
+          )}
+          <button
+            onClick={() => {
+              const script = {
+                id: Date.now().toString(),
+                businessName: companyData.businessName || 'Без названия',
+                methodology: methodology.name,
+                category: companyData.businessSubcategory || '',
+                createdAt: new Date(),
+                content: generateFullScript(),
+                isFavorite: false
+              };
+              exportToPDF(script);
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+          >
+            📄 PDF
+          </button>
+          <button
+            onClick={() => {
+              const script = {
+                id: Date.now().toString(),
+                businessName: companyData.businessName || 'Без названия',
+                methodology: methodology.name,
+                category: companyData.businessSubcategory || '',
+                createdAt: new Date(),
+                content: generateFullScript(),
+                isFavorite: false
+              };
+              downloadMarkdown(script);
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm font-medium"
+          >
+            📝 MD
           </button>
       </div>
 

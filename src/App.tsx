@@ -7,8 +7,11 @@ import ObjectionHandler from './components/ObjectionHandler';
 import ApiKeyManager from './components/ApiKeyManager';
 import SalesTrainer from './components/SalesTrainer';
 import ModelSelector from './components/ModelSelector';
+import ScriptHistory from './components/ScriptHistory';
+import ROICalculator from './components/ROICalculator';
+import { useScriptHistory, SavedScript } from './hooks/useScriptHistory';
 
-type Tab = 'settings' | 'methodology' | 'profile' | 'script' | 'objections' | 'trainer';
+type Tab = 'settings' | 'methodology' | 'profile' | 'script' | 'objections' | 'trainer' | 'history';
 
 const initialCompanyData: CompanyData = {
   businessName: '',
@@ -36,6 +39,11 @@ export default function App() {
     if (stored === 'dark' || stored === 'light') return stored;
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   });
+
+  // История скриптов
+  const { scripts, saveScript, deleteScript, toggleFavorite, clearHistory } = useScriptHistory();
+  const [showROICalculator, setShowROICalculator] = useState(false);
+  const [currentScriptContent, setCurrentScriptContent] = useState<string>('');
 
   useEffect(() => {
     if (apiKey) {
@@ -71,6 +79,7 @@ export default function App() {
     { id: 'script', label: 'Скрипт', icon: '📝', disabled: !selectedMethodology },
     { id: 'objections', label: 'Возражения', icon: '🛡️' },
     { id: 'trainer', label: 'Тренажёр', icon: '🎭' },
+    { id: 'history', label: 'История', icon: '📚' },
   ];
 
   const getProgress = () => {
@@ -283,6 +292,16 @@ export default function App() {
               companyData={companyData}
               apiKey={apiKey}
               selectedModel={selectedModel}
+              onSaveScript={(content) => {
+                saveScript({
+                  businessName: companyData.businessName || 'Без названия',
+                  methodology: selectedMethodology.name,
+                  category: companyData.businessSubcategory || '',
+                  content
+                });
+                alert('✅ Скрипт сохранён в историю!');
+              }}
+              onOpenROI={() => setShowROICalculator(true)}
             />
             <div className="mt-6 flex justify-between">
               <button
@@ -329,7 +348,28 @@ export default function App() {
             <SalesTrainer companyData={companyData} apiKey={apiKey} selectedModel={selectedModel} />
           </div>
         )}
+
+        {activeTab === 'history' && (
+          <div>
+            <ScriptHistory
+              scripts={scripts}
+              onDelete={deleteScript}
+              onToggleFavorite={toggleFavorite}
+              onClearAll={clearHistory}
+              onLoadScript={(script) => {
+                // Загружаем скрипт — можно добавить логику восстановления данных
+                console.log('Загрузка скрипта:', script);
+                setActiveTab('script');
+              }}
+            />
+          </div>
+        )}
       </main>
+
+      {/* Калькулятор ROI */}
+      {showROICalculator && (
+        <ROICalculator onClose={() => setShowROICalculator(false)} />
+      )}
 
       {/* Footer */}
       <footer className="border-t border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-900/50 mt-12">
